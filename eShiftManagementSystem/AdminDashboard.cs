@@ -27,7 +27,6 @@ namespace eShiftManagementSystem
         {
             Console.WriteLine(panelAdminContainer.Parent.Name);
 
-            // Connect mouse click events
             panelNavHome.MouseClick += NavPanel_Click;
             panelNavAdmins.MouseClick += NavPanel_Click;
             panelNavShiftRequests.MouseClick += NavPanel_Click;
@@ -71,14 +70,12 @@ namespace eShiftManagementSystem
             LoadAdmins();
             cmbAdminRole.Items.AddRange(new string[] { "Admin", "SuperAdmin" });
 
-            // CLICK EVENTS
             btnVehicleInfo.MouseClick += TransportNav_Click;
             btnAssignShift.MouseClick += TransportNav_Click;
             btnAddVehicle.MouseClick += TransportNav_Click;
             btnDrivers.MouseClick += TransportNav_Click;
             btnAddDriver.MouseClick += TransportNav_Click;
 
-            // HOVER EFFECTS
             btnVehicleInfo.MouseEnter += SidebarButton_MouseEnter;
             btnAssignShift.MouseEnter += SidebarButton_MouseEnter;
             btnAddVehicle.MouseEnter += SidebarButton_MouseEnter;
@@ -91,14 +88,12 @@ namespace eShiftManagementSystem
             btnDrivers.MouseLeave += SidebarButton_MouseLeave;
             btnAddDriver.MouseLeave += SidebarButton_MouseLeave;
 
-            // LABELS trigger same panel nav
             labelVehicleInfo.Click += (s, e2) => TransportNav_Click(btnVehicleInfo, null);
             labelAssignShift.Click += (s, e2) => TransportNav_Click(btnAssignShift, null);
             lblAddVehicle.Click += (s, e2) => TransportNav_Click(btnAddVehicle, null);
             labelDrivers.Click += (s, e2) => TransportNav_Click(btnDrivers, null);
             lblAddDriver.Click += (s, e2) => TransportNav_Click(btnAddDriver, null);
 
-            // INITIAL STATE
             TransportNav_Click(btnVehicleInfo, null);
 
             cmbVehicleType.Items.Clear();
@@ -137,7 +132,6 @@ namespace eShiftManagementSystem
             {
                 HighlightSidebar(clickedPanel);
 
-                // Hide all content panels first
                 panelHomeContainer.Visible = false;
                 panelAdminContainer.Visible = false;
                 panelShiftRequestsContainer.Visible = false;
@@ -146,7 +140,6 @@ namespace eShiftManagementSystem
                 panelTransportContainer.Visible = false;
                 panelReportsContainer.Visible = false;
 
-                // Show the corresponding one
                 if (clickedPanel == panelNavHome)
                     panelHomeContainer.Visible = true;
                 else if (clickedPanel == panelNavAdmins)
@@ -190,23 +183,18 @@ namespace eShiftManagementSystem
                 {
                     conn.Open();
 
-                    // Total Customers
                     SqlCommand cmdCustomers = new SqlCommand("SELECT COUNT(*) FROM Customers", conn);
                     lblTotalCustomers.Text = cmdCustomers.ExecuteScalar()?.ToString() ?? "0";
 
-                    // Completed Shifts
                     SqlCommand cmdCompleted = new SqlCommand("SELECT COUNT(*) FROM Shifts WHERE Status = 'Completed'", conn);
                     lblCompletedShifts.Text = cmdCompleted.ExecuteScalar()?.ToString() ?? "0";
 
-                    // Pending Shifts
                     SqlCommand cmdPending = new SqlCommand("SELECT COUNT(*) FROM Shifts WHERE Status = 'Pending'", conn);
                     lblPendingShifts.Text = cmdPending.ExecuteScalar()?.ToString() ?? "0";
 
-                    // Active Transport Units
                     SqlCommand cmdTransport = new SqlCommand("SELECT COUNT(*) FROM TransportUnits WHERE Status = 'Active'", conn);
                     lblActiveUnits.Text = cmdTransport.ExecuteScalar()?.ToString() ?? "0";
 
-                    // Chart: Shift Status Distribution (Pie)
                     SqlCommand cmdStatusCounts = new SqlCommand("SELECT Status, COUNT(*) FROM Shifts GROUP BY Status", conn);
                     using (SqlDataReader reader = cmdStatusCounts.ExecuteReader())
                     {
@@ -224,27 +212,22 @@ namespace eShiftManagementSystem
                         }
                     }
 
-                    // Chart: Daily Requests (Column)
-                    // Clear chart and configure
                     chartDailyRequests.Series[0].Points.Clear();
                     chartDailyRequests.Series[0].ChartType = SeriesChartType.Column;
                     chartDailyRequests.Series[0].IsValueShownAsLabel = true;
                     chartDailyRequests.Series[0].LabelForeColor = Color.Black;
                     chartDailyRequests.Legends.Clear();
 
-                    // Configure X axis (dates)
                     chartDailyRequests.ChartAreas[0].AxisX.Title = "Date";
                     chartDailyRequests.ChartAreas[0].AxisX.Interval = 1;
                     chartDailyRequests.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
-                    chartDailyRequests.ChartAreas[0].AxisX.LabelStyle.Angle = -45; // Optional: tilt labels
+                    chartDailyRequests.ChartAreas[0].AxisX.LabelStyle.Angle = -45; 
 
-                    // Configure Y axis (only whole numbers)
                     chartDailyRequests.ChartAreas[0].AxisY.Title = "Shift Requests";
                     chartDailyRequests.ChartAreas[0].AxisY.Interval = 1;
                     chartDailyRequests.ChartAreas[0].AxisY.MajorGrid.LineColor = Color.LightGray;
                     chartDailyRequests.ChartAreas[0].AxisY.LabelStyle.Format = "0";
 
-                    // Get data in ascending order (left to right)
                     SqlCommand cmdByDay = new SqlCommand(@"
                         SELECT TOP 7 CONVERT(date, ShiftDate) AS ShiftDay, COUNT(*) AS Total 
                         FROM Shifts 
@@ -273,7 +256,6 @@ namespace eShiftManagementSystem
 
         /////////////////////////////////////////////////////// Customers Section ///////////////////////////////////////////////////////////////////
 
-        // Load customers with optional shift count
         private void LoadCustomerData()
         {
             string query = @"
@@ -306,7 +288,6 @@ namespace eShiftManagementSystem
             }
         }
 
-        //  Apply DataGridView styling
         private void StyleCustomerGrid()
         {
             dgvCustomers.BorderStyle = BorderStyle.None;
@@ -321,7 +302,6 @@ namespace eShiftManagementSystem
             dgvCustomers.EnableHeadersVisualStyles = false;
             dgvCustomers.GridColor = Color.Gainsboro;
 
-            // Row styling
             dgvCustomers.DefaultCellStyle.BackColor = Color.White;
             dgvCustomers.DefaultCellStyle.ForeColor = Color.FromArgb(30, 30, 30);
             dgvCustomers.DefaultCellStyle.Font = new Font("Segoe UI", 10F);
@@ -330,18 +310,15 @@ namespace eShiftManagementSystem
             dgvCustomers.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dgvCustomers.RowTemplate.Height = 40;
 
-            // Column header styling
             dgvCustomers.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
             dgvCustomers.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(40, 70, 100); // deep steel blue
             dgvCustomers.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
             dgvCustomers.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
             dgvCustomers.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-            // Zebra striping (alternate row color)
             dgvCustomers.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(245, 245, 245);
             dgvCustomers.AlternatingRowsDefaultCellStyle.ForeColor = Color.Black;
 
-            // Add Delete button if not present
             if (!dgvCustomers.Columns.Contains("Delete"))
             {
                 DataGridViewButtonColumn btnDelete = new DataGridViewButtonColumn();
@@ -353,7 +330,6 @@ namespace eShiftManagementSystem
             }
         }
 
-        // Handle Delete button click
         private void dgvCustomers_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
@@ -374,12 +350,11 @@ namespace eShiftManagementSystem
                         conn.Close();
                     }
 
-                    LoadCustomerData(); // Refresh
+                    LoadCustomerData();
                 }
             }
         }
 
-        // Search customers
         private void txtSearchCustomers_TextChanged(object sender, EventArgs e)
         {
             string filter = txtSearchCustomers.Text.Trim().ToLower();
@@ -432,7 +407,7 @@ namespace eShiftManagementSystem
 
                 if (reader.Read())
                 {
-                    panelSearchPrompt.Visible = false; // Hide prompt panel when data is found
+                    panelSearchPrompt.Visible = false; 
 
                     lblContactName.Text = reader["PickupContactName"].ToString();
                     lblContactPhone.Text = reader["PickupContactPhone"].ToString();
@@ -442,7 +417,6 @@ namespace eShiftManagementSystem
                     lblServiceTypes.Text = reader["ServiceType"].ToString();
                     lblCurrentStatus.Text = reader["Status"].ToString();
 
-                    // Set label color based on status
                     string status = reader["Status"].ToString();
                     switch (status)
                     {
@@ -495,7 +469,7 @@ namespace eShiftManagementSystem
             }
 
             MessageBox.Show("Shift status updated.");
-            btnSearchShifts.PerformClick(); // Refresh the display
+            btnSearchShifts.PerformClick(); 
         }
         private void pictureBox10_Click(object sender, EventArgs e)
         {
@@ -542,19 +516,16 @@ namespace eShiftManagementSystem
                 INNER JOIN Customers C ON S.CustomerID = C.CustomerID
                 WHERE 1=1";
 
-            // Status Filter
             if (!string.IsNullOrEmpty(selectedStatus) && selectedStatus != "All")
             {
                 query += " AND S.Status = @Status";
             }
 
-            // Customer Search
             if (!string.IsNullOrEmpty(customers))
             {
                 query += " AND (ISNULL(C.FirstName, '') + ' ' + ISNULL(C.LastName, '') LIKE @CustomerName)";
             }
 
-            // Sorting
             if (selectedSort == "Oldest First")
             {
                 query += " ORDER BY S.ShiftDate ASC";
@@ -916,7 +887,6 @@ namespace eShiftManagementSystem
         }
         private void StyleAdminGrid(DataGridView grid)
         {
-            // General Grid Settings
             grid.BorderStyle = BorderStyle.None;
             grid.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
             grid.EnableHeadersVisualStyles = false;
@@ -928,24 +898,20 @@ namespace eShiftManagementSystem
             grid.GridColor = Color.LightGray;
             grid.RowTemplate.Height = 30;
 
-            // Header Styling
             grid.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(30, 30, 30);
             grid.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
             grid.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
             grid.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-            // Cell Styling
             grid.DefaultCellStyle.BackColor = Color.White;
             grid.DefaultCellStyle.ForeColor = Color.Black;
             grid.DefaultCellStyle.Font = new Font("Segoe UI", 10F);
-            grid.DefaultCellStyle.SelectionBackColor = Color.FromArgb(200, 230, 201); // Light green highlight
+            grid.DefaultCellStyle.SelectionBackColor = Color.FromArgb(200, 230, 201); 
             grid.DefaultCellStyle.SelectionForeColor = Color.Black;
             grid.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-            // Alternate Row Colors (Zebra style)
             grid.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(245, 245, 245);
 
-            // Clear previous selection
             grid.ClearSelection();
         }
 
@@ -953,24 +919,20 @@ namespace eShiftManagementSystem
 
         /////////////////////////////////////////////////////// Transport Units Section ///////////////////////////////////////////////////////////
         
-        // Central navigation logic
         private void TransportNav_Click(object sender, EventArgs e)
         {
-            // Reset all nav button backgrounds
             btnVehicleInfo.BackColor = Color.Navy;
             btnAssignShift.BackColor = Color.Navy;
             btnAddVehicle.BackColor = Color.Navy;
             btnDrivers.BackColor = Color.Navy;
             btnAddDriver.BackColor = Color.Navy;
 
-            // Hide all content panels
             panelVehicleInfo.Visible = false;
             panelAssignShift.Visible = false;
             panelAddVehicles.Visible = false;
             panelDrivers.Visible = false;
             panelAddDrivers.Visible = false;
 
-            // Handle based on clicked sender
             if (sender == btnVehicleInfo)
             {
                 btnVehicleInfo.BackColor = Color.RoyalBlue;
@@ -1004,7 +966,6 @@ namespace eShiftManagementSystem
             }
         }
 
-        // Hover effects
         private void SidebarButton_MouseEnter(object sender, EventArgs e)
         {
             if (sender is Panel hoveredPanel)
@@ -1116,7 +1077,6 @@ namespace eShiftManagementSystem
             {
                 conn.Open();
 
-                // ✅ Join TransportUnits + VehicleAssignments + Drivers
                 string query = @"
             SELECT 
                 T.VehicleID,
@@ -1137,7 +1097,6 @@ namespace eShiftManagementSystem
 
                 dgvVehicles.DataSource = dt;
 
-                // ✅ Optional: Add friendly column names
                 dgvVehicles.Columns["UnitName"].HeaderText = "Vehicle Name";
                 dgvVehicles.Columns["VehicleNumber"].HeaderText = "Number";
                 dgvVehicles.Columns["VehicleType"].HeaderText = "Type";
@@ -1145,7 +1104,6 @@ namespace eShiftManagementSystem
                 dgvVehicles.Columns["Status"].HeaderText = "Status";
                 dgvVehicles.Columns["AssignedDriver"].HeaderText = "Assigned Driver";
 
-                // ✅ Optional styling
                 dgvVehicles.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
                 dgvVehicles.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
                 dgvVehicles.ReadOnly = true;
@@ -1187,7 +1145,7 @@ namespace eShiftManagementSystem
 
         private void btnRefreshVehicles_Click(object sender, EventArgs e)
         {
-            LoadVehicleInfo(); // Reload data from database
+            LoadVehicleInfo();
         }
 
         private void panelNavTransportUnits_Paint(object sender, PaintEventArgs e)
@@ -1217,7 +1175,6 @@ namespace eShiftManagementSystem
             string vehicleType = cmbVehicleType.SelectedItem?.ToString();
             string capacity = txtCapacity.Text.Trim();
 
-            // Validate BEFORE inserting
             if (string.IsNullOrEmpty(unitName) || string.IsNullOrEmpty(vehicleNumber) ||
                 string.IsNullOrEmpty(vehicleType) || string.IsNullOrEmpty(capacity))
             {
@@ -1225,7 +1182,6 @@ namespace eShiftManagementSystem
                 return;
             }
 
-            // Insert into DB
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 string query = "INSERT INTO TransportUnits (UnitName, VehicleNumber, VehicleType, Capacity, Status) " +
@@ -1242,7 +1198,6 @@ namespace eShiftManagementSystem
                 conn.Close();
             }
 
-            // Refresh the DataGridView
             LoadVehicleInfo();  
 
            
@@ -1271,7 +1226,6 @@ namespace eShiftManagementSystem
 
                 HighlightVehicleStatus(lblV_Status.Text);
 
-                // Load additional details
                 LoadVehicleShiftAndDriverDetails(vehicleId);
             }
         }
@@ -1336,23 +1290,20 @@ namespace eShiftManagementSystem
                 conn.Close();
             }
 
-            // Optional: Add logic for driver assignment
             lblV_AssignedDriver.Text = GetAssignedDriver(vehicleId);
         }
 
         private string GetAssignedDriver(string vehicleId)
         {
-            return "Not Available"; // or pull from future 'DriverVehicleAssignments' table
+            return "Not Available"; 
         }
 
         private void cmbSelectDriver_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }
-        // Global variable
         private int selectedShiftId = -1;
 
-        // Load all pending shifts to the DGV below the assignment fields
         private void LoadPendingShiftsForAssignment()
         {
             string query = @"
@@ -1376,11 +1327,10 @@ namespace eShiftManagementSystem
                 adapter.Fill(dt);
 
                 dgvAssignShiftPending.DataSource = dt;
-                StyleGrid(dgvAssignShiftPending); // Apply your custom DGV style
+                StyleGrid(dgvAssignShiftPending); 
             }
         }
 
-        // Load all drivers and vehicles to dropdowns
         private void LoadAssignShiftResources()
         {
             cmbSelectVehicle.Items.Clear();
@@ -1390,7 +1340,6 @@ namespace eShiftManagementSystem
             {
                 conn.Open();
 
-                // ✅ Load Active Vehicles
                 SqlCommand cmdVehicles = new SqlCommand(
                     "SELECT VehicleID, UnitName FROM TransportUnits WHERE Status = 'Active'", conn);
                 SqlDataReader rdrVehicles = cmdVehicles.ExecuteReader();
@@ -1404,7 +1353,6 @@ namespace eShiftManagementSystem
                 }
                 rdrVehicles.Close();
 
-                // ✅ Load Active Drivers
                 SqlCommand cmdDrivers = new SqlCommand(
                     "SELECT DriverID, FirstName + ' ' + LastName AS FullName FROM Drivers WHERE Status = 'Active'", conn);
                 SqlDataReader rdrDrivers = cmdDrivers.ExecuteReader();
@@ -1418,7 +1366,6 @@ namespace eShiftManagementSystem
                 }
                 rdrDrivers.Close();
 
-                // ✅ Load Pending Shifts into DataGridView
                 SqlDataAdapter adapter = new SqlDataAdapter(@"
             SELECT ShiftID, PickupCity, DeliveryCity, ServiceType, Status
             FROM Shifts
@@ -1432,8 +1379,6 @@ namespace eShiftManagementSystem
             if (cmbSelectVehicle.Items.Count > 0) cmbSelectVehicle.SelectedIndex = 0;
             if (cmbSelectDriver.Items.Count > 0) cmbSelectDriver.SelectedIndex = 0;
         }
-
-        // ✅ Assign selected shift
         private void btnAssignShifts_Click(object sender, EventArgs e)
         {
 
@@ -1463,7 +1408,7 @@ namespace eShiftManagementSystem
                 MessageBox.Show("✅ Shift successfully assigned to the selected vehicle and driver!",
                     "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                LoadAssignShiftResources(); // Refresh after assignment
+                LoadAssignShiftResources(); 
             }
             else
             {
@@ -1472,7 +1417,6 @@ namespace eShiftManagementSystem
             }
         }
 
-        // Handle selection from the DGV
         private void dgvAssignShiftPending_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
@@ -1481,14 +1425,11 @@ namespace eShiftManagementSystem
                 lblSelectedShift.Text = "Selected Shift ID: " + selectedShiftId;
             }
         }
-
-        // Reset button
         private void btnAssignCancel_Click(object sender, EventArgs e)
         {
             ResetAssignShiftFields();
         }
 
-        // Reset fields
         private void ResetAssignShiftFields()
         {
             cmbSelectVehicle.SelectedIndex = -1;
@@ -1498,7 +1439,6 @@ namespace eShiftManagementSystem
             selectedShiftId = -1;
         }
 
-        // Custom class to store dropdown values
         public class ComboBoxItem
         {
             public string Text { get; set; }
@@ -1507,7 +1447,6 @@ namespace eShiftManagementSystem
         }
 
 
-        //  Load Drivers into DataGridView
         private void LoadDrivers()
         {
             string query = @"SELECT DriverID, FirstName, ContactNo, Email, Status FROM Drivers ORDER BY FirstName ASC";
@@ -1529,14 +1468,12 @@ namespace eShiftManagementSystem
 
             string search = txtSearchDriver.Text.Trim();
 
-            // If search is empty, just reload all drivers (fast, reliable)
             if (string.IsNullOrEmpty(search))
             {
                 LoadDrivers();
                 return;
             }
 
-            // Otherwise run the filtered query
             string query = @"
         SELECT DriverID, FirstName, ContactNo, Email, Status
         FROM Drivers
@@ -1739,19 +1676,16 @@ namespace eShiftManagementSystem
 
             try
             {
-                // Save directly to Desktop without dialog
                 string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
                 string fileName = $"EShift_Report_{DateTime.Now:yyyyMMdd_HHmmss}.csv";
                 string fullPath = Path.Combine(desktopPath, fileName);
 
                 using (StreamWriter sw = new StreamWriter(fullPath, false, Encoding.UTF8))
                 {
-                    // Write headers
                     var headers = dgvReport.Columns.Cast<DataGridViewColumn>()
                                     .Select(col => col.HeaderText);
                     sw.WriteLine(string.Join(",", headers));
 
-                    // Write data
                     foreach (DataGridViewRow row in dgvReport.Rows)
                     {
                         if (!row.IsNewRow)
@@ -1763,7 +1697,6 @@ namespace eShiftManagementSystem
                     }
                 }
 
-                // Ask if user wants to open the file location
                 DialogResult result = MessageBox.Show(
                     $"✅ Report exported successfully to your Desktop!\n\nFile: {fileName}\n\nWould you like to open the file location?",
                     "Export Complete",
@@ -1773,7 +1706,6 @@ namespace eShiftManagementSystem
 
                 if (result == DialogResult.Yes)
                 {
-                    // Open the desktop folder and select the file
                     System.Diagnostics.Process.Start("explorer.exe", $"/select,\"{fullPath}\"");
                 }
             }
@@ -1843,14 +1775,12 @@ namespace eShiftManagementSystem
         {
             dgvReport.EnableHeadersVisualStyles = false;
 
-            // Header style
             dgvReport.ColumnHeadersDefaultCellStyle.BackColor = Color.Navy;
             dgvReport.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
             dgvReport.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
             dgvReport.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dgvReport.ColumnHeadersHeight = 40;
 
-            // Rows style
             dgvReport.DefaultCellStyle.BackColor = Color.White;
             dgvReport.DefaultCellStyle.ForeColor = Color.Black;
             dgvReport.DefaultCellStyle.SelectionBackColor = Color.LightBlue;
@@ -1858,13 +1788,11 @@ namespace eShiftManagementSystem
             dgvReport.DefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Regular);
             dgvReport.RowTemplate.Height = 30;
 
-            // Grid style
             dgvReport.GridColor = Color.LightGray;
             dgvReport.BorderStyle = BorderStyle.Fixed3D;
             dgvReport.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvReport.AutoGenerateColumns = true;
 
-            // No user editing
             dgvReport.ReadOnly = true;
             dgvReport.AllowUserToAddRows = false;
             dgvReport.AllowUserToDeleteRows = false;
@@ -1920,14 +1848,14 @@ namespace eShiftManagementSystem
                 }
 
                 MessageBox.Show("✅ Vehicle deactivated successfully.", "Done", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                LoadVehicleInfo(); // Refresh grid
+                LoadVehicleInfo();
             }
         }
 
         private void btnClearSearchVehicle_Click(object sender, EventArgs e)
         {
-            txtSearchVehicles.Text = "";   // Clear the text box
-            LoadVehicleInfo();             // Reload full vehicle list
+            txtSearchVehicles.Text = "";   
+            LoadVehicleInfo();            
             txtSearchVehicles.Focus();
         }
     }
