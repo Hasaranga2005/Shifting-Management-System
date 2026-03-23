@@ -15,10 +15,10 @@ namespace eShiftManagementSystem
         public frmCustomerDashboard()
         {
             InitializeComponent();
-            LoadProvinces(); // ✅ Load provinces here
+            LoadProvinces();
             toolTip1.SetToolTip(pbClose, "Back");
-            HighlightTab(PanelRequestShift); // Default selection
-            ShowContainer(panelrequestnewshiftcontainer); // Show initial content panel
+            HighlightTab(PanelRequestShift); 
+            ShowContainer(panelrequestnewshiftcontainer); 
 
         }
 
@@ -29,7 +29,6 @@ namespace eShiftManagementSystem
             ///////////////////////////REQUEST SHIFT//////////////////////
             LoadCustomerName();
 
-            // Attach click events
             PanelRequestShift.Click += Panel_Click;
             panelOngoingJobsTab.Click += Panel_Click;
             panelJobHistoryTab.Click += Panel_Click;
@@ -38,21 +37,17 @@ namespace eShiftManagementSystem
             lblmyongoingjobs.Click += Panel_Click;
             lbljobhistory.Click += Panel_Click;
 
-            // Set welcome text if name is passed
             if (!string.IsNullOrEmpty(LoggedInCustomerName))
             {
                 lblwelcome.Text = $"Welcome, {LoggedInCustomerName}";
             }
 
-            // Set default selected tab to Ongoing Jobs
             HighlightTab(PanelRequestShift);
             ShowContainer(panelrequestnewshiftcontainer);
 
-            //event for combo boxes
             AttachComboBoxEvents();
 
 
-            // Enable auto-suggest (user typing triggers match suggestions)
             cmbPickupCity.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
             cmbPickupCity.AutoCompleteSource = AutoCompleteSource.ListItems;
 
@@ -71,7 +66,6 @@ namespace eShiftManagementSystem
             cmbDeliveryDistrict.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
             cmbDeliveryDistrict.AutoCompleteSource = AutoCompleteSource.ListItems;
 
-            //Make the pphone number formatting by adding the countrycode first
             txtPickupPhone.Text = "+94 ";
             txtRecipientPhone.Text = "+94 ";
 
@@ -83,7 +77,6 @@ namespace eShiftManagementSystem
 
 
             lblwelcome.Text = "WELCOME, " + LoggedInCustomerName;
-            // LoggedInCustomerID will be used for submitting shifts etc.
 
             if (!string.IsNullOrEmpty(LoggedInCustomerEmail))
             {
@@ -98,7 +91,6 @@ namespace eShiftManagementSystem
 
         ////////////////////////////////////////////////// REQUEST SHIFT ///////////////////////////////////////////////////////
 
-        //Loading the customer name beside the welcome logo
         private void LoadCustomerName()
         {
             using (SqlConnection conn = new SqlConnection(connectionString))
@@ -115,7 +107,7 @@ namespace eShiftManagementSystem
                         object result = cmd.ExecuteScalar();
                         if (result != null)
                         {
-                            lblwelcome.Text = "Welcome, " + result.ToString(); // Label to show name
+                            lblwelcome.Text = "Welcome, " + result.ToString();
                         }
                         else
                         {
@@ -139,14 +131,13 @@ namespace eShiftManagementSystem
         }
 
 
-        // Handles all panel clicks
         private void Panel_Click(object sender, EventArgs e)
         {
             if (sender == panelOngoingJobsTab || sender == lblmyongoingjobs)
             {
                 HighlightTab(panelOngoingJobsTab);
                 ShowContainer(PanleOngoingJobsContainer);
-                LoadOngoingJobsToGrid(); // ← loads fresh data
+                LoadOngoingJobsToGrid();
             }
 
             else if (sender == PanelRequestShift || sender == lblrequestnewshift)
@@ -163,7 +154,6 @@ namespace eShiftManagementSystem
             }
         }
 
-        // Highlights the selected panel and resets others
         private void HighlightTab(Panel selectedPanel)
         {
             PanelRequestShift.BackColor = Color.FromArgb(150, 182, 242);
@@ -204,7 +194,6 @@ namespace eShiftManagementSystem
             }
         }
 
-        // Show selected container and hide others
         private void ShowContainer(Panel visibleContainer)
         {
 
@@ -216,13 +205,11 @@ namespace eShiftManagementSystem
             visibleContainer.BringToFront();
         }
 
-        //close button
         private void pbClose_Click(object sender, EventArgs e)
         {
             Application.Exit();
         }
 
-        //close button hover effect
         private void pbClose_MouseEnter(object sender, EventArgs e)
         {
             pbClose.BackColor = Color.IndianRed;
@@ -233,7 +220,6 @@ namespace eShiftManagementSystem
             pbClose.BackColor = Color.Transparent;
         }
 
-        // Dictionary to map province to list of districts
         private Dictionary<string, List<string>> provinceDistrictMap = new Dictionary<string, List<string>>()
 {
             { "Central", new List<string> { "Kandy", "Matale", "Nuwara Eliya" } },
@@ -247,7 +233,6 @@ namespace eShiftManagementSystem
             { "Western", new List<string> { "Colombo", "Gampaha", "Kalutara" } }
         };
 
-        //Dictionary to map districts to list of cities+
         Dictionary<string, List<string>> districtCityMap = new Dictionary<string, List<string>>()
         {
             { "Colombo", new List<string>{ "Biyagama", "Colombo", "Dehiwala", "Homagama", "Katunayake", "Kelaniya", "Kottawa", "Maharagama", "Padukka", "Pettah", "Piliyandala", "Seeduwa", "Wattala" } },
@@ -281,10 +266,8 @@ namespace eShiftManagementSystem
 
         public string LoggedInCustomerEmail { get; set; }
 
-        //Make the email hide part of it for secure
         private string MaskEmail(string email)
         {
-            // johndoe@gmail.com → joh***@gmail.com
             int atIndex = email.IndexOf('@');
             if (atIndex <= 1)
                 return email;
@@ -298,11 +281,9 @@ namespace eShiftManagementSystem
             return maskedName + domainPart;
         }
 
-        //Submit button
         private void btnregister_Click(object sender, EventArgs e)
         {
 
-            // Validation
             if (string.IsNullOrWhiteSpace(txtPickupName.Text))
             {
                 MessageBox.Show("Pickup Name is required."); return;
@@ -361,7 +342,6 @@ namespace eShiftManagementSystem
             }
 
 
-            // Build pickup and delivery addresses
             string pickupLocation = $"{txtPickupAddress.Text}, {cmbPickupCity.Text}, {cmbPickupDistrict.Text}, {cmbPickupProvince.Text}";
             string deliveryLocation = $"{txtDeliveryAddress.Text}, {cmbDeliveryCity.Text}, {cmbDeliveryDistrict.Text}, {cmbDeliveryProvince.Text}";
 
@@ -426,7 +406,6 @@ namespace eShiftManagementSystem
             }
         }
 
-        // clear fields
         private void ClearRequestForm()
         {
             cmbServiceType.SelectedIndex = -1;
@@ -458,10 +437,8 @@ namespace eShiftManagementSystem
             txtDeliveryAddress.Clear();
         }
 
-        //clear fields button
         private void btnClearFields_Click(object sender, EventArgs e)
         {
-            // Clear ComboBoxes
             cmbServiceType.SelectedIndex = -1;
             cmbServiceType.Text = "";
 
@@ -483,8 +460,6 @@ namespace eShiftManagementSystem
             cmbDeliveryCity.SelectedIndex = -1;
             cmbDeliveryCity.Text = "";
 
-
-            // Clear TextBoxes
             txtPickupName.Clear();
             txtPickupPhone.Clear();
             txtPackageDesc.Clear();
@@ -494,11 +469,9 @@ namespace eShiftManagementSystem
             txtRecipientPhone.Clear();
             txtDeliveryAddress.Clear();
 
-            // Reset Date Picker
             dtpPickupDate.Value = DateTime.Now;
         }
 
-        // When user selects a pickup province, load relevant districts into the Pickup District combo box
         private void cmbPickupProvince_SelectedIndexChanged(object sender, EventArgs e)
         {
             cmbPickupDistrict.Items.Clear();
@@ -508,7 +481,6 @@ namespace eShiftManagementSystem
             }
         }
 
-        // When user selects a delivery province, load relevant districts into the Delivery District combo box
         private void cmbDeliveryProvince_SelectedIndexChanged(object sender, EventArgs e)
         {
             cmbDeliveryDistrict.Items.Clear();
@@ -518,7 +490,6 @@ namespace eShiftManagementSystem
             }
         }
 
-        // When a district is selected for pickup, load matching cities into the pickup city combo box
         private void cmbPickupDistrict_SelectedIndexChanged(object sender, EventArgs e)
         {
             cmbPickupCity.Items.Clear();
@@ -528,7 +499,6 @@ namespace eShiftManagementSystem
             }
         }
 
-        // When delivery district changes, load related cities into delivery city combo box
         private void cmbDeliveryDistrict_SelectedIndexChanged(object sender, EventArgs e)
         {
             cmbDeliveryCity.Items.Clear();
@@ -551,16 +521,14 @@ namespace eShiftManagementSystem
             cmbDeliveryProvince.SelectedIndex = -1;
         }
 
-        // Format phone numbers as "+94 XX XXX XXXX" and limit to 9 digits
         private void FormatPhoneNumber(TextBox txt)
         {
             string input = txt.Text.Replace("+94", "").Replace(" ", "").Trim();
 
-            // Remove non-digit characters
             input = new string(input.Where(char.IsDigit).ToArray());
 
             if (input.Length > 9)
-                input = input.Substring(0, 9); // Limit to 9 digits
+                input = input.Substring(0, 9);
 
             string formatted = "+94 ";
             if (input.Length > 0)
@@ -571,22 +539,19 @@ namespace eShiftManagementSystem
                 formatted += " " + input.Substring(5);
 
             txt.Text = formatted;
-            txt.SelectionStart = txt.Text.Length; // Keep cursor at end
+            txt.SelectionStart = txt.Text.Length; 
         }
 
-        // Prevent user from deleting "+94 " prefix in phone number fields
         private void txtPhone_KeyDown(object sender, KeyEventArgs e)
         {
             TextBox txt = sender as TextBox;
 
-            // Prevent deleting prefix
             if ((e.KeyCode == Keys.Back || e.KeyCode == Keys.Delete) && txt.SelectionStart <= 4)
             {
                 e.SuppressKeyPress = true;
             }
         }
 
-        // Handles logout confirmation and redirects user to login form
         private void lblLogout_Click(object sender, EventArgs e)
         {
             DialogResult result = MessageBox.Show(
@@ -602,8 +567,7 @@ namespace eShiftManagementSystem
                 this.Hide();
             }
         }
-
-        //hovering over logout label
+        
         private void lblLogout_MouseEnter(object sender, EventArgs e)
         {
             lblLogout.Font = new Font(lblLogout.Font.FontFamily, lblLogout.Font.Size, FontStyle.Underline | FontStyle.Bold);
@@ -614,7 +578,6 @@ namespace eShiftManagementSystem
             lblLogout.Font = new Font(lblLogout.Font.FontFamily, lblLogout.Font.Size, FontStyle.Bold | FontStyle.Italic);
         }
 
-        // Load customer profile details from database into form fields
         private void LoadCustomerDetails()
         {
             string connectionString = @"Data Source=DESKTOP-L03EVJF\SQLEXPRESS;Initial Catalog=E-ShiftDB;Integrated Security=True";
@@ -646,7 +609,6 @@ namespace eShiftManagementSystem
             }
         }
 
-        // Update customer profile information in the database
         private void btnupdate_Click(object sender, EventArgs e)
         {
 
@@ -692,7 +654,6 @@ namespace eShiftManagementSystem
             }
         }
 
-        // Toggle visibility of the profile panel when profile picture is clicked
         private void pictureBox1_Click(object sender, EventArgs e)
         {
             panelprofile.Visible = !panelprofile.Visible;
@@ -700,7 +661,6 @@ namespace eShiftManagementSystem
 
         }
 
-        // Toggle profile panel when profile icon is clicked
         private void panelprofile_MouseClick(object sender, MouseEventArgs e)
         {
             pbprofile.BackColor = Color.LightGray;
@@ -722,7 +682,6 @@ namespace eShiftManagementSystem
             string status = dgvOngoingJobs.Rows[e.RowIndex].Cells["Status"].Value?.ToString();
             int shiftId = Convert.ToInt32(dgvOngoingJobs.Rows[e.RowIndex].Cells["Job ID"].Value);
 
-            // ✅ ACTION BUTTON
             if (e.ColumnIndex == dgvOngoingJobs.Columns["Action"].Index)
             {
                 if (status == "Pending")
@@ -739,7 +698,6 @@ namespace eShiftManagementSystem
                 }
             }
 
-            // ✅ CANCEL BUTTON
             else if (e.ColumnIndex == dgvOngoingJobs.Columns["Cancel"].Index)
             {
                 if (status != "Pending")
@@ -769,7 +727,7 @@ namespace eShiftManagementSystem
                     conn.Open();
                     cmd.ExecuteNonQuery();
                     MessageBox.Show("Shift marked as completed!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    LoadOngoingJobsToGrid(); // Refresh table
+                    LoadOngoingJobsToGrid(); 
                 }
                 catch (Exception ex)
                 {
@@ -808,10 +766,8 @@ namespace eShiftManagementSystem
                     dgvOngoingJobs.Columns.Clear();
                     dgvOngoingJobs.DataSource = dt;
 
-                    // Re-add the buttons AFTER binding
                     AddActionAndCancelButtons();
 
-                    // Force each row height manually (the key fix!)
                     foreach (DataGridViewRow row in dgvOngoingJobs.Rows)
                     {
                         row.Height = 40;
@@ -829,7 +785,7 @@ namespace eShiftManagementSystem
                     ApplyRowColorsByStatus();
 
                     dgvOngoingJobs.DataBindingComplete += dgvOngoingJobs_DataBindingComplete;
-                    dgvOngoingJobs.ClearSelection(); // prevent row auto-selection
+                    dgvOngoingJobs.ClearSelection(); 
                 }
                 catch (Exception ex)
                 {
@@ -878,22 +834,18 @@ namespace eShiftManagementSystem
             dgvOngoingJobs.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvOngoingJobs.GridColor = Color.LightGray;
 
-            // Header
             dgvOngoingJobs.ColumnHeadersDefaultCellStyle.BackColor = Color.SteelBlue;
             dgvOngoingJobs.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
             dgvOngoingJobs.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
 
-            // Cells
             dgvOngoingJobs.DefaultCellStyle.BackColor = Color.White;
             dgvOngoingJobs.DefaultCellStyle.ForeColor = Color.Black;
             dgvOngoingJobs.DefaultCellStyle.SelectionBackColor = Color.LightGray;
             dgvOngoingJobs.DefaultCellStyle.SelectionForeColor = Color.Black;
             dgvOngoingJobs.DefaultCellStyle.Font = new Font("Segoe UI", 12F);
 
-            // Row Height
-            dgvOngoingJobs.RowTemplate.Height = 40; // 🚀 Set fixed row height here
+            dgvOngoingJobs.RowTemplate.Height = 40; 
 
-            // Color buttons
             foreach (DataGridViewRow row in dgvOngoingJobs.Rows)
             {
                 var status = row.Cells["Status"].Value?.ToString();
@@ -915,7 +867,6 @@ namespace eShiftManagementSystem
                     row.DefaultCellStyle.BackColor = Color.MistyRose;
                 }
 
-                // Buttons style
                 DataGridViewCell cancelCell = row.Cells["Cancel"];
                 DataGridViewCell actionCell = row.Cells["Action"];
 
@@ -974,7 +925,7 @@ namespace eShiftManagementSystem
                     conn.Open();
                     cmd.ExecuteNonQuery();
                     MessageBox.Show("Shift cancelled successfully.", "Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    LoadOngoingJobsToGrid(); // Refresh grid
+                    LoadOngoingJobsToGrid(); 
                 }
                 catch (Exception ex)
                 {
