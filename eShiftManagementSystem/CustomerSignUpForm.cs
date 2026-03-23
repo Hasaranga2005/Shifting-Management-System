@@ -77,7 +77,6 @@ namespace eShiftManagementSystem
 
         private async void btnAdminLogin_Click(object sender, EventArgs e)
         {
-            // Reset all error messages and clear panel borders
             lblFirstNameError.Text = "";
             lblLastNameError.Text = "";
             lblEmailError.Text = "";
@@ -86,11 +85,10 @@ namespace eShiftManagementSystem
             lblConfirmPasswordError.Text = "";
             lblError.Text = "";
 
-            ClearAllErrors(); // Clears panel colors or additional UI states
+            ClearAllErrors();
 
             bool hasError = false;
 
-            //  First Name Validation
             if (string.IsNullOrWhiteSpace(txtfirstname.Text))
             {
                 panelFirstName.BackColor = Color.Red;
@@ -104,7 +102,6 @@ namespace eShiftManagementSystem
                 picTickFirstName.Visible = true;
             }
 
-            //  Last Name Validation
             if (string.IsNullOrWhiteSpace(txtlastname.Text))
             {
                 panelLastName.BackColor = Color.Red;
@@ -118,7 +115,6 @@ namespace eShiftManagementSystem
                 picTickLastName.Visible = true;
             }
 
-            //  Email Validation
             if (!IsValidEmail(txtemail.Text))
             {
                 panelEmail.BackColor = Color.Red;
@@ -132,7 +128,6 @@ namespace eShiftManagementSystem
                 picTickEmail.Visible = true;
             }
 
-            //  Username Validation
             if (string.IsNullOrWhiteSpace(txtusername.Text))
             {
                 panelUsername.BackColor = Color.Red;
@@ -146,13 +141,11 @@ namespace eShiftManagementSystem
                 picTickUsername.Visible = true;
             }
 
-            //  Password Validation
             string password = txtpassword.Text;
             if (!ValidatePasswordField())
                 hasError = true;
 
 
-            // Confirm Password
             if (string.IsNullOrWhiteSpace(txtconfirmpassword.Text))
             {
                 panelConfirmPassword.BackColor = Color.Red;
@@ -173,29 +166,25 @@ namespace eShiftManagementSystem
                 picTickConfirmPass.Visible= true;
             }
 
-            // If there are validation errors, stop here
             if (hasError)
                 return;
 
-            //  Show Spinner Overlay Section
             panelOverlay.Visible = true;
             panelOverlay.BringToFront();
             lblProcessing.Text = "Registering...";
             lblProcessing.Visible = true;
             picLoading.Visible = true;
-            Application.DoEvents(); // Immediately updates the UI
+            Application.DoEvents(); 
 
-            await Task.Delay(2000); // Optional small delay for smoother experience
+            await Task.Delay(2000); 
 
 
-            // Begin Database Operation
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 try
                 {
                     conn.Open();
 
-                    // First check if the email exists
                     string emailCheckQuery = "SELECT COUNT(*) FROM Customers WHERE Email = @Email";
                     using (SqlCommand emailCmd = new SqlCommand(emailCheckQuery, conn))
                     {
@@ -214,7 +203,6 @@ namespace eShiftManagementSystem
                         }
                     }
 
-                    // Then check if the username exists
                     string usernameCheckQuery = "SELECT COUNT(*) FROM Customers WHERE Username = @Username";
                     using (SqlCommand usernameCmd = new SqlCommand(usernameCheckQuery, conn))
                     {
@@ -232,7 +220,6 @@ namespace eShiftManagementSystem
                         }
                     }
 
-                    // Insert the new customer record
                     string insertQuery = @"
                 INSERT INTO Customers (FirstName, LastName, Email, Username, Password)
                 VALUES (@FirstName, @LastName, @Email, @Username, @Password)";
@@ -247,19 +234,16 @@ namespace eShiftManagementSystem
                         int rowsInserted = insertCmd.ExecuteNonQuery();
                         if (rowsInserted > 0)
                         {
-                            // Registration Success UI
                             lblProcessing.Visible = false;
                             picLoading.Visible = false;
                             panelOverlay.Visible = false;
 
                             MessageBox.Show("Registration successful!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            ClearFields(); // Reset all text fields after registration
+                            ClearFields(); 
 
-                            // Hide current form
                             this.Close();
 
-                            // Open customer login form
-                            frmcustomerlogin loginForm = new frmcustomerlogin(); // Replace with your actual form name
+                            frmcustomerlogin loginForm = new frmcustomerlogin(); 
                             loginForm.Show();
 
                         }
@@ -279,7 +263,6 @@ namespace eShiftManagementSystem
         }
         private bool IsStrongPassword(string password)
         {
-            // At least 6 characters, 1 uppercase, 1 lowercase, 1 digit, 1 special character
             var pattern = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$";
             return Regex.IsMatch(password, pattern);
         }
@@ -303,7 +286,6 @@ namespace eShiftManagementSystem
             panelUsername.BackColor = panelPassword.BackColor = panelConfirmPassword.BackColor = Color.Silver;
         }
 
-        //password show/hide button
         private void button3_Click(object sender, EventArgs e)
         {
             if (txtpassword.PasswordChar == '*')
@@ -322,7 +304,6 @@ namespace eShiftManagementSystem
             }
         }
 
-        //confirm password show/hide button
         private void button2_Click(object sender, EventArgs e)
         {
             if (txtconfirmpassword.PasswordChar == '*')
