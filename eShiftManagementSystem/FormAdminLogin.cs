@@ -36,7 +36,6 @@ namespace eShiftManagementSystem
             string username = txtAdminUsername.Text.Trim();
             string password = txtPassword.Text.Trim();
 
-            // Reset labels and colors
             lblAdminUsernameRequired.Visible = false;
             lblAdminPasswordRequired.Visible = false;
             lblAdminUserNotFound.Visible = false;
@@ -47,7 +46,6 @@ namespace eShiftManagementSystem
 
             bool hasEmpty = false;
 
-            // Show required field messages
             if (string.IsNullOrWhiteSpace(username))
             {
                 lblAdminUsernameRequired.Visible = true;
@@ -64,7 +62,6 @@ namespace eShiftManagementSystem
                 hasEmpty = true;
             }
 
-            // Don't continue if any field is empty
             if (hasEmpty) return;
 
             using (SqlConnection conn = new SqlConnection(connectionString))
@@ -81,7 +78,6 @@ namespace eShiftManagementSystem
 
                     if (result == null)
                     {
-                        // Username not found
                         lblAdminUserNotFound.Visible = true;
                         panelAdminUsername.BackColor = Color.Red;
                         panelAdminPassword.BackColor = Color.Red;
@@ -92,12 +88,10 @@ namespace eShiftManagementSystem
                         return;
                     }
 
-                    // Check password
                     string correctPassword = result.ToString();
 
                     if (correctPassword.Trim() != password)
                     {
-                        // Incorrect password
                         lblAdminIncorrectPassword.Visible = true;
                         panelAdminPassword.BackColor = Color.Red;
                         txtPassword.Clear();
@@ -105,7 +99,6 @@ namespace eShiftManagementSystem
                         return;
                     }
 
-                    // Success
                     MessageBox.Show("Login successful!", "Welcome", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     frmAdminDashboard dashboard = new frmAdminDashboard();
                     dashboard.Show();
