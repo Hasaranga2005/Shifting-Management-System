@@ -22,19 +22,16 @@ namespace eShiftManagementSystem
             toolTip1.ForeColor = Color.Black;
         }
 
-        // Close button
         private void pictureBox1_Click(object sender, EventArgs e)
         {
             Application.Exit();
         }
        
-        // Minimize button
         private void pictureBox3_Click(object sender, EventArgs e)
         {
             this.WindowState = FormWindowState.Minimized;
         }
 
-        // Admin login button
         private void btnAdminLogin_Click(object sender, EventArgs e)
         {
             frmAdminLogin adminLogin = new frmAdminLogin();
@@ -42,7 +39,6 @@ namespace eShiftManagementSystem
             this.Hide();
         }
 
-        // Customer login button
         private void button1_Click(object sender, EventArgs e)
         {
             frmcustomerlogin customerLogin = new frmcustomerlogin();
