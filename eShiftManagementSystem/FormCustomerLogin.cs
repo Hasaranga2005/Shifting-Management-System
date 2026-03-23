@@ -81,14 +81,13 @@ namespace eShiftManagementSystem
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            // Create and open the registration form
             frmcustomersignup signUp = new frmcustomersignup();
             signUp.Show();
             this.Close();
         }
 
         private void btnCustomerLogin_Click(object sender, EventArgs e)
-        {// 🔄 Reset error messages
+        {
             lblErrorWrongPassword.Visible = false;
             lblErrorUserNotFound.Visible = false;
             lblUsernameRequired.Visible = false;
@@ -98,7 +97,6 @@ namespace eShiftManagementSystem
             string password = txtcustomerPassword.Text.Trim();
             bool hasEmptyField = false;
 
-            // 🔴 Validate username
             if (string.IsNullOrWhiteSpace(username))
             {
                 lblUsernameRequired.Text = "Please enter your username.";
@@ -111,7 +109,6 @@ namespace eShiftManagementSystem
                 panelUsername.BackColor = Color.LightGray;
             }
 
-            // 🔴 Validate password
             if (string.IsNullOrWhiteSpace(password))
             {
                 lblPasswordRequired.Text = "Please enter your password.";
@@ -125,7 +122,7 @@ namespace eShiftManagementSystem
             }
 
             if (hasEmptyField)
-                return; // Stop if any field is empty
+                return; 
 
             string connectionString = @"Data Source=DESKTOP-L03EVJF\SQLEXPRESS;Initial Catalog=E-ShiftDB;Integrated Security=True";
 
@@ -135,7 +132,6 @@ namespace eShiftManagementSystem
                 {
                     conn.Open();
 
-                    // ✅ Fetch everything you need
                     string query = "SELECT CustomerID, FirstName, Password, Email FROM Customers WHERE Username = @Username";
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
@@ -148,12 +144,11 @@ namespace eShiftManagementSystem
                                 string dbPassword = reader["Password"].ToString();
                                 int customerId = Convert.ToInt32(reader["CustomerID"]);
                                 string customerName = reader["FirstName"].ToString();
-                                string customerEmail = reader["Email"].ToString(); // ✅ Make sure you're selecting Email in your query!
+                                string customerEmail = reader["Email"].ToString();
 
 
                                 if (password == dbPassword)
                                 {
-                                    // ✅ Successful login
                                     frmCustomerDashboard dashboard = new frmCustomerDashboard();
                                     dashboard.LoggedInCustomerID = customerId;
                                     dashboard.LoggedInCustomerName = customerName;
@@ -163,7 +158,6 @@ namespace eShiftManagementSystem
                                 }
                                 else
                                 {
-                                    // ❌ Wrong password
                                     lblErrorWrongPassword.Text = "Incorrect password.";
                                     lblErrorWrongPassword.Visible = true;
                                     txtcustomerPassword.Clear();
@@ -172,7 +166,6 @@ namespace eShiftManagementSystem
                             }
                             else
                             {
-                                // ❌ No such username
                                 lblErrorUserNotFound.Text = "Username not found.";
                                 lblErrorUserNotFound.Visible = true;
                                 txtcustomerUsername.Clear();
